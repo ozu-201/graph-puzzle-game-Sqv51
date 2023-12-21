@@ -61,46 +61,53 @@ struct Graph{
     vector<Vertex> vertices;
     vector<vector<int>> adjMatrix;
 
-    Graph(size_t wordSize,string filepath){
-        ifstream file;
-        file.open(filepath);
+    Graph(size_t wordLength, string& filestr)  {
+        ifstream  file;
+        file.open(filestr);
 
-
-        if(file.is_open()){
+        size_t index = 0;
+        //read the file and create the graph
+        if (file.is_open()){
             string line;
-            size = 0;
-            while(file){
-                getline(file,line);
-                if(line.size() == wordSize){
-                    vertices.push_back(line);
-                    size++;
+            while (file){
+                getline(file, line);
+                if (line.size() == wordLength){
+                    vertices.emplace_back(line);
+                    index++;
                 }
-
             }
-        } else{cout<< "File is not open";}
+        } else {
+            cout << "File not open" << endl;
+        }
+        file.close();
 
 
+        //create the adjacency matrix according to the size of the vertices
+        size = vertices.size();
         adjMatrix = vector<vector<int>>(size);
+        for (size_t i = 0; i < size; i++){
+            adjMatrix[i] = vector<int>(size,0);
+        }
 
-
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                if(isSingleCharDiff(vertices[i].word,vertices[j].word)){
-                    adjMatrix[i][j] =1;
+        for(size_t i = 0; i < size; i++){
+            for(size_t j = 0; j < size; j++){
+                if (isSingleCharDiff(vertices[i].word, vertices[j].word)){
+                    //both vertices are adjacent
+                    adjMatrix[i][j] = 1;
                     adjMatrix[j][i] = 1;
                 }
             }
         }
 
     }
+
     void printEdges(){
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                if(adjMatrix[i][j]== 1){
-                    cout<<vertices[i].word<<"<---->"<< vertices[j].word<<endl;
+        for (size_t i = 0; i < size; i++){
+            for (size_t j = 0; j < size; j++){
+                if (adjMatrix[i][j] == 1){
+                    cout << vertices[i].word << " <-> " << vertices[j].word << endl;
                 }
             }
-
         }
     }
 
