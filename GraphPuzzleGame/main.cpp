@@ -2,122 +2,75 @@
 // Created by yk029484 on 12/21/2023.
 //
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include "Queue.h"
 #include "Queue.cpp"
+#include "Graph.h"
+#include "Graph.cpp"
 
 using namespace std;
 
-bool isSingleCharDiff(string firstWord, string secondWord) {
-    int size = 0;
-    for ([[maybe_unused]] auto i : firstWord) {//to avoid using size() function
-        size++;
-    }
-
-    bool differenceDetectedOnce = false;
-    //check if the words are different by more than one character
-
-    for (size_t i = 0; i < firstWord.size(); i++) {
-        //if the words are different by more than one character, return false
-        if (differenceDetectedOnce && firstWord[i] != secondWord[i]) {
-            return false;
-        }
-        if (firstWord[i] != secondWord[i]) {
-            differenceDetectedOnce = true;
-        }
-    }
-    return true;
-}
-
-struct Vertex{
-    string word;
-    Vertex(string word): word(word){}
-};
-
-struct Path {
-    int id;
-    vector<Vertex> path;
-
-    Path(int id, vector<Vertex> path): id(id){
-        this-> path = path;
-    }
-    Path(int id, vector<Vertex> path, Vertex& nextVertex){
-        this->path = path;
-        this->path.push_back(nextVertex);
-    }
-
-    void printPath(){
-        size_t size=0;
-        for(auto i:path){
-            cout<<i.word<<"->";
-        }
-        cout<<endl;
-    }
-};
-struct Graph{
-    size_t size;
-    vector<Vertex> vertices;
-    vector<vector<int>> adjMatrix;
-
-    Graph(size_t wordLength, string& filestr)  {
-        ifstream  file;
-        file.open(filestr);
-
-        size_t index = 0;
-        //read the file and create the graph
-        if (file.is_open()){
-            string line;
-            while (file){
-                getline(file, line);
-                if (line.size() == wordLength){
-                    vertices.emplace_back(line);
-                    index++;
-                }
-            }
-        } else {
-            cout << "File not open" << endl;
-        }
-        file.close();
-
-
-        //create the adjacency matrix according to the size of the vertices
-        size = vertices.size();
-        adjMatrix = vector<vector<int>>(size);
-        for (size_t i = 0; i < size; i++){
-            adjMatrix[i] = vector<int>(size,0);
-        }
-
-        for(size_t i = 0; i < size; i++){
-            for(size_t j = 0; j < size; j++){
-                if (isSingleCharDiff(vertices[i].word, vertices[j].word)){
-                    //both vertices are adjacent
-                    adjMatrix[i][j] = 1;
-                    adjMatrix[j][i] = 1;
-                }
-            }
-        }
-
-    }
-
-    void printEdges(){
-        for (size_t i = 0; i < size; i++){
-            for (size_t j = 0; j < size; j++){
-                if (adjMatrix[i][j] == 1){
-                    cout << vertices[i].word << " <-> " << vertices[j].word << endl;
-                }
-            }
-        }
-    }
 
 
 
-};
 
 int main(){
 
-    Graph graph = Graph(5,"turkish-dictionary.txt");
-    graph.printEdges();
+    //construct the graph from the txt file, file shoult be in working directory or you must write explicit file location
+    Graph graph1 = Graph(5,"turkish-dictionary.txt");
+    graph1.findShortestPath("tamam","devam").printPath();
+
+
+    Graph graph2 = Graph(4,"english-dictionary.txt");
+    graph2.findShortestPathDjikstra("cone","mole").printPath();
+
+    Graph graph3(3,"english-dictionary.txt");
+    graph3.addWord("cat");
+    graph3.addWord("cot");
+    graph3.addWord("cog");
+    graph3.addWord("dog");
+    graph3.addEdge("cat", "cot");
+    graph3.addEdge("cot", "cog");
+    graph3.addEdge("cog", "dog");
+
+    std::cout << "Test Case: Adding Edges with One-Letter Difference (3 letter words)\n";
+    std::cout << "Shortest Path from 'cat' to 'dog' (BFS):\n";
+    graph3.findShortestPath("cat", "dog").printPath();
+    std::cout << "Shortest Path from 'cat' to 'dog' (Dijkstra):\n";
+    graph3.findShortestPathDjikstra("cat", "dog").printPath();
+    std::cout << "------------------------------------------\n";
+
+
+    // Test Case: Adding Edges with One-Letter Difference (4 letter words)
+    Graph graph4= Graph(4,"english-dictionary.txt");
+    graph4.addWord("dark");
+    graph4.addWord("bark");
+    graph4.addWord("barn");
+    graph4.addEdge("dark", "bark");
+    graph4.addEdge("bark", "barn");
+
+    std::cout << "Test Case: Adding Edges with One-Letter Difference (4 letter words)\n";
+    std::cout << "Shortest Path from 'dark' to 'barn' (BFS):\n";
+    graph4.findShortestPath("dark", "barn").printPath();
+    std::cout << "Shortest Path from 'dark' to 'barn' (Dijkstra):\n";
+    graph4.findShortestPathDjikstra("dark", "barn").printPath();
+    std::cout << "------------------------------------------\n";
+
+    // Test Case: Adding Edges with One-Letter Difference (5 letter words)
+    Graph graph5= Graph(5,"english-dictionary.txt");
+    graph5.addWord("stone");
+    graph5.addWord("store");
+    graph5.addWord("score");
+    graph5.addEdge("stone", "store");
+    graph5.addEdge("store", "score");
+
+    std::cout << "Test Case: Adding Edges with One-Letter Difference (5 letter words)\n";
+    std::cout << "Shortest Path from 'stone' to 'score' (BFS):\n";
+    graph5.findShortestPath("stone", "score").printPath();
+    std::cout << "Shortest Path from 'stone' to 'score' (Dijkstra):\n";
+    graph5.findShortestPathDjikstra("stone", "score").printPath();
+    std::cout << "------------------------------------------\n";
+
+
     return 0;
 }
+
+
